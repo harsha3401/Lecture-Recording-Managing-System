@@ -22,6 +22,10 @@
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
+            --success: #10b981;
+            --success-light: #34d399;
+            --warning: #f59e0b;
+            --error: #ef4444;
         }
 
         * {
@@ -186,6 +190,7 @@
             border-radius: 16px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .stat-item:hover {
@@ -455,13 +460,574 @@
             pointer-events: none;
         }
 
+        /* ==================== TOAST NOTIFICATIONS ==================== */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 22px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            min-width: 320px;
+            max-width: 420px;
+            transform: translateX(120%);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: all;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            border-radius: 16px 0 0 16px;
+        }
+
+        .toast.success::before { background: linear-gradient(180deg, var(--success), var(--success-light)); }
+        .toast.info::before { background: linear-gradient(180deg, var(--primary), var(--primary-light)); }
+        .toast.warning::before { background: linear-gradient(180deg, var(--warning), #fbbf24); }
+        .toast.error::before { background: linear-gradient(180deg, var(--error), #f87171); }
+
+        .toast-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .toast.success .toast-icon { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .toast.info .toast-icon { background: rgba(99, 102, 241, 0.15); color: var(--primary-light); }
+        .toast.warning .toast-icon { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .toast.error .toast-icon { background: rgba(239, 68, 68, 0.15); color: var(--error); }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .toast-message {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            border-radius: 0 0 0 16px;
+            animation: toastProgress linear forwards;
+        }
+
+        .toast.success .toast-progress { background: linear-gradient(90deg, var(--success), var(--success-light)); }
+        .toast.info .toast-progress { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+        .toast.warning .toast-progress { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+        .toast.error .toast-progress { background: linear-gradient(90deg, var(--error), #f87171); }
+
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+
+        /* ==================== ACCESS FORM MODAL ==================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 0;
+            max-width: 480px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.85) translateY(40px);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 32px 32px 0;
+            text-align: center;
+        }
+
+        .modal-header-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 26px;
+            color: var(--primary-light);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+            animation: modalIconPop 0.5s ease-out 0.2s both;
+        }
+
+        @keyframes modalIconPop {
+            0% { transform: scale(0) rotate(-180deg); }
+            70% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .modal-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .modal-header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .modal-body {
+            padding: 24px 32px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .modal-footer {
+            padding: 0 32px 32px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4);
+        }
+
+        .modal-btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--card-border);
+        }
+
+        .modal-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        /* ==================== LOADING OVERLAY ==================== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 10001;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            position: relative;
+        }
+
+        .loading-spinner::before,
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .loading-spinner::before {
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            border-right-color: var(--secondary);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner::after {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border: 3px solid transparent;
+            border-bottom-color: var(--accent);
+            border-left-color: var(--primary-light);
+            animation: spinReverse 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spinReverse {
+            to { transform: rotate(-360deg); }
+        }
+
+        .loading-text {
+            margin-top: 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .loading-subtext {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: loadingDots 1.5s infinite;
+        }
+
+        @keyframes loadingDots {
+            0% { content: '.'; }
+            33% { content: '..'; }
+            66% { content: '...'; }
+            100% { content: '.'; }
+        }
+
+        /* ==================== ACCESS GRANTED BADGE ==================== */
+        .access-badge {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 10002;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px 50px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-width: 420px;
+            width: 90%;
+        }
+
+        .access-badge.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .access-badge-icon {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            color: var(--success);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+            animation: accessPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes accessPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.3); }
+            50% { box-shadow: 0 0 60px rgba(16, 185, 129, 0.5); }
+        }
+
+        .access-badge h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .access-badge p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .access-badge-btn {
+            padding: 12px 32px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .access-badge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10001;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            opacity: 0;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100px) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+
+        /* EmailJS Setup Notice */
+        .setup-notice {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.1));
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: var(--warning);
+            line-height: 1.5;
+        }
+
+        .setup-notice strong {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .setup-notice code {
+            background: rgba(245, 158, 11, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+
         /* Responsive */
         @media (max-width: 640px) {
             .header h1 { font-size: 2rem; }
             .lecture-card { padding: 20px 24px; }
             .lecture-icon { width: 50px; height: 50px; font-size: 20px; }
-            .stats-bar { gap: 16px; }
+            .stats-bar { gap: 16px; flex-wrap: wrap; }
             .stat-item { padding: 12px 16px; }
+            .toast-container { right: 12px; top: 12px; }
+            .toast { min-width: 280px; padding: 14px 18px; }
+            .modal { max-width: 95%; }
+            .modal-header, .modal-body, .modal-footer { padding-left: 20px; padding-right: 20px; }
+            .form-row { grid-template-columns: 1fr; }
+            .access-badge { padding: 30px 24px; }
         }
 
         /* Scrollbar */
@@ -480,6 +1046,7 @@
         }
     </style>
 <base target="_blank">
+<base target="_blank">
 </head>
 <body>
     <canvas id="particles"></canvas>
@@ -487,6 +1054,88 @@
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Access Request Modal -->
+    <div class="modal-overlay" id="accessModalOverlay">
+        <div class="modal" id="accessModal">
+            <button class="modal-close-btn" onclick="closeAccessModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <div class="modal-header-icon">
+                    <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <h2>Request Access</h2>
+                <p>Fill in your details to request lecture access</p>
+            </div>
+            <div class="modal-body">
+                <div class="setup-notice" id="setupNotice" style="display: none;">
+                    <strong><i class="fas fa-exclamation-triangle"></i> Setup Required</strong>
+                    Replace <code>YOUR_PUBLIC_KEY</code>, <code>YOUR_SERVICE_ID</code>, and <code>YOUR_TEMPLATE_ID</code> in the code with your EmailJS credentials.
+                </div>
+                <form id="accessForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="requesterName"><i class="fas fa-user"></i> Your Name</label>
+                            <input type="text" id="requesterName" name="requesterName" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="requesterEmail"><i class="fas fa-envelope"></i> Your Email</label>
+                            <input type="email" id="requesterEmail" name="requesterEmail" placeholder="john@example.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="lectureSelect"><i class="fas fa-book"></i> Lecture You Want Access To</label>
+                        <select id="lectureSelect" name="lectureSelect" required>
+                            <option value="" disabled selected>Select a lecture...</option>
+                            <option value="Object Oriented Programming Concepts 1">Object Oriented Programming Concepts 1</option>
+                            <option value="Web Development 1">Web Development 1</option>
+                            <option value="Database Management 1">Database Management 1</option>
+                            <option value="Mathematics for Computer Science 1">Mathematics for Computer Science 1</option>
+                            <option value="All Lectures">All Lectures</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestTime"><i class="fas fa-clock"></i> Preferred Time</label>
+                        <input type="text" id="requestTime" name="requestTime" placeholder="e.g., Morning 9-11 AM, Evening 6-8 PM" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="requestMessage"><i class="fas fa-comment"></i> Message (Optional)</label>
+                        <textarea id="requestMessage" name="requestMessage" placeholder="Any additional information..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeAccessModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="sendAccessBtn" onclick="sendAccessRequest()">
+                    <i class="fas fa-paper-plane"></i> Send Request
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Sending Access Request</div>
+        <div class="loading-subtext">Please wait<span class="loading-dots"></span></div>
+    </div>
+
+    <!-- Access Granted Badge -->
+    <div class="access-badge" id="accessBadge">
+        <div class="access-badge-icon">
+            <i class="fas fa-check"></i>
+        </div>
+        <h2>Request Sent!</h2>
+        <p>Your access request has been emailed to Harsha. You will receive a response shortly.</p>
+        <button class="access-badge-btn" onclick="hideAccessBadge()">Got it!</button>
+    </div>
+
+    <!-- Confetti Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
 
     <div class="container">
         <header class="header">
@@ -498,22 +1147,22 @@
         </header>
 
         <div class="stats-bar">
-            <div class="stat-item">
+            <div class="stat-item" onclick="showStatToast('lectures')">
                 <div class="stat-number">4</div>
                 <div class="stat-label">Lectures</div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item" onclick="showStatToast('drive')">
                 <div class="stat-number"><i class="fab fa-google-drive"></i></div>
                 <div class="stat-label">Google Drive</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-number"><i class="fas fa-infinity"></i></div>
-                <div class="stat-label">Access</div>
+            <div class="stat-item" onclick="openAccessModal()">
+                <div class="stat-number"><i class="fas fa-key"></i></div>
+                <div class="stat-label">Request Access</div>
             </div>
         </div>
 
         <div class="lectures-grid">
-            <a href="https://drive.google.com/drive/folders/168nUiam_sjU3B9C7ihbrt7gW7FpOC5YT?usp=drive_link" target="_blank" class="lecture-card" onclick="createRipple(event, this)">
+            <a href="https://drive.google.com/drive/folders/168nUiam_sjU3B9C7ihbrt7gW7FpOC5YT?usp=drive_link" target="_blank" class="lecture-card" onclick="handleLectureClick(event, this, 'Object Oriented Programming Concepts 1')">
                 <div class="lecture-icon icon-oop">
                     <i class="fas fa-cubes"></i>
                 </div>
@@ -526,7 +1175,7 @@
                 </div>
             </a>
 
-            <a href="https://drive.google.com/drive/folders/1qw-v0uA52Tc0QoRJ8Ra4ddIKK-jWXgsh?usp=drive_link" target="_blank" class="lecture-card" onclick="createRipple(event, this)">
+            <a href="https://drive.google.com/drive/folders/1qw-v0uA52Tc0QoRJ8Ra4ddIKK-jWXgsh?usp=drive_link" target="_blank" class="lecture-card" onclick="handleLectureClick(event, this, 'Web Development 1')">
                 <div class="lecture-icon icon-web">
                     <i class="fas fa-code"></i>
                 </div>
@@ -539,7 +1188,7 @@
                 </div>
             </a>
 
-            <a href="https://drive.google.com/drive/folders/1QsVUJDdU8DtabZGhiJvXdgjX0oZqeAp8?usp=drive_link" target="_blank" class="lecture-card" onclick="createRipple(event, this)">
+            <a href="https://drive.google.com/drive/folders/1QsVUJDdU8DtabZGhiJvXdgjX0oZqeAp8?usp=drive_link" target="_blank" class="lecture-card" onclick="handleLectureClick(event, this, 'Database Management 1')">
                 <div class="lecture-icon icon-db">
                     <i class="fas fa-database"></i>
                 </div>
@@ -552,7 +1201,7 @@
                 </div>
             </a>
 
-            <a href="https://drive.google.com/drive/folders/1shYhyWLDq-kM_xFQFhsyl9w_4__1mTz4?usp=drive_link" target="_blank" class="lecture-card" onclick="createRipple(event, this)">
+            <a href="https://drive.google.com/drive/folders/1shYhyWLDq-kM_xFQFhsyl9w_4__1mTz4?usp=drive_link" target="_blank" class="lecture-card" onclick="handleLectureClick(event, this, 'Mathematics for Computer Science 1')">
                 <div class="lecture-icon icon-math">
                     <i class="fas fa-square-root-variable"></i>
                 </div>
@@ -578,8 +1227,250 @@
         </div>
     </div>
 
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
     <script>
-        // Ripple Effect
+        // ==================== EMAILJS CONFIGURATION ====================
+        // IMPORTANT: Replace these with your actual EmailJS credentials!
+        const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';      // Get from emailjs.com → Account → API Keys
+        const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';        // Get from emailjs.com → Email Services
+        const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';    // Get from emailjs.com → Email Templates
+        const RECIPIENT_EMAIL = 'harshasandun2005@gmail.com';
+
+        // Initialize EmailJS
+        (function() {
+            try {
+                emailjs.init(EMAILJS_PUBLIC_KEY);
+            } catch(e) {
+                console.log('EmailJS not initialized yet - will use fallback');
+            }
+        })();
+
+        // ==================== TOAST NOTIFICATION SYSTEM ====================
+        function showToast(type, title, message, duration = 4000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                success: 'fa-check-circle',
+                info: 'fa-info-circle',
+                warning: 'fa-exclamation-triangle',
+                error: 'fa-times-circle'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${icons[type]}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="dismissToast(this.parentElement)">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="toast-progress" style="animation-duration: ${duration}ms;"></div>
+            `;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            const timeout = setTimeout(() => {
+                dismissToast(toast);
+            }, duration);
+
+            toast.dataset.timeout = timeout;
+        }
+
+        function dismissToast(toast) {
+            if (!toast) return;
+            clearTimeout(toast.dataset.timeout);
+            toast.style.transform = 'translateX(120%)';
+            toast.style.opacity = '0';
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 500);
+        }
+
+        // ==================== ACCESS MODAL ====================
+        function openAccessModal() {
+            document.getElementById('accessModalOverlay').classList.add('active');
+            // Show setup notice if using placeholder keys
+            if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
+                document.getElementById('setupNotice').style.display = 'block';
+            }
+        }
+
+        function closeAccessModal() {
+            document.getElementById('accessModalOverlay').classList.remove('active');
+            document.getElementById('accessForm').reset();
+        }
+
+        document.getElementById('accessModalOverlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeAccessModal();
+        });
+
+        // ==================== LOADING OVERLAY ====================
+        function showLoading(text = 'Sending Access Request') {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.querySelector('.loading-text').textContent = text;
+            overlay.classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        // ==================== ACCESS GRANTED BADGE ====================
+        function showAccessGranted() {
+            const badge = document.getElementById('accessBadge');
+            badge.classList.add('show');
+            createConfetti();
+            showToast('success', 'Request Sent!', 'Your access request email has been sent to Harsha successfully.', 5000);
+        }
+
+        function hideAccessBadge() {
+            document.getElementById('accessBadge').classList.remove('show');
+            document.getElementById('confettiContainer').innerHTML = '';
+        }
+
+        // ==================== CONFETTI ====================
+        function createConfetti() {
+            const container = document.getElementById('confettiContainer');
+            const colors = ['#6366f1', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6'];
+
+            for (let i = 0; i < 60; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = (Math.random() * 8 + 4) + 'px';
+                confetti.style.height = (Math.random() * 8 + 4) + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s linear ${Math.random() * 2}s forwards`;
+                container.appendChild(confetti);
+            }
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // ==================== SEND ACCESS REQUEST (EMAILJS) ====================
+        async function sendAccessRequest() {
+            const form = document.getElementById('accessForm');
+
+            // Validate form
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                showToast('warning', 'Missing Information', 'Please fill in all required fields before sending.', 4000);
+                return;
+            }
+
+            const name = document.getElementById('requesterName').value.trim();
+            const email = document.getElementById('requesterEmail').value.trim();
+            const lecture = document.getElementById('lectureSelect').value;
+            const time = document.getElementById('requestTime').value.trim();
+            const message = document.getElementById('requestMessage').value.trim();
+
+            const btn = document.getElementById('sendAccessBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            closeAccessModal();
+            showLoading('Sending your access request...');
+
+            // Prepare template parameters for EmailJS
+            const templateParams = {
+                to_email: RECIPIENT_EMAIL,
+                from_name: name,
+                from_email: email,
+                lecture_name: lecture,
+                preferred_time: time,
+                message: message || 'No additional message provided.',
+                request_date: new Date().toLocaleString(),
+                user_agent: navigator.userAgent,
+                page_url: window.location.href
+            };
+
+            try {
+                // Check if EmailJS is properly configured
+                if (EMAILJS_PUBLIC_KEY === '0QpJ0TL_6nM6FlN7L' || 
+                    EMAILJS_SERVICE_ID === 'service_izgaa6v' || 
+                    EMAILJS_TEMPLATE_ID === 'template_s49aykf') {
+
+                    // Simulate sending for demo purposes
+                    await simulateEmailSend(templateParams);
+
+                    showToast('info', 'Demo Mode', 'EmailJS credentials not configured. Simulating email send for demonstration.', 6000);
+                } else {
+                    // Send actual email via EmailJS
+                    const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                    console.log('Email sent successfully:', response);
+                }
+
+                hideLoading();
+                showAccessGranted();
+
+            } catch (error) {
+                console.error('Email send failed:', error);
+                hideLoading();
+                showToast('error', 'Send Failed', 'Unable to send email. Please try again or contact Harsha directly.', 5000);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Request';
+            }
+        }
+
+        // Simulation function for demo without real credentials
+        function simulateEmailSend(params) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    console.log('=== SIMULATED EMAIL ===');
+                    console.log('To:', params.to_email);
+                    console.log('From:', params.from_name, '<' + params.from_email + '>');
+                    console.log('Lecture:', params.lecture_name);
+                    console.log('Time:', params.preferred_time);
+                    console.log('Message:', params.message);
+                    console.log('Date:', params.request_date);
+                    console.log('=======================');
+                    resolve({ status: 200, text: 'OK (simulated)' });
+                }, 2000);
+            });
+        }
+
+        // ==================== LECTURE CLICK HANDLER ====================
+        function handleLectureClick(event, element, lectureName) {
+            event.preventDefault();
+            createRipple(event, element);
+
+            const href = element.getAttribute('href');
+
+            showLoading(`Opening ${lectureName}`);
+            showToast('info', 'Opening Lecture', `Redirecting to ${lectureName} on Google Drive...`, 3000);
+
+            setTimeout(() => {
+                hideLoading();
+                showToast('success', 'Redirected!', `${lectureName} is now opening in a new tab.`, 3000);
+                window.open(href, '_blank');
+            }, 2000);
+        }
+
+        // ==================== STAT CLICK HANDLERS ====================
+        function showStatToast(type) {
+            if (type === 'lectures') {
+                showToast('info', '4 Lectures Available', 'You have access to 4 lecture recordings across different subjects.', 4000);
+            } else if (type === 'drive') {
+                showToast('info', 'Google Drive Integration', 'All lectures are hosted securely on Google Drive for easy access.', 4000);
+            }
+        }
+
+        // ==================== RIPPLE EFFECT ====================
         function createRipple(event, element) {
             const ripple = document.createElement('span');
             const rect = element.getBoundingClientRect();
@@ -596,11 +1487,10 @@
             setTimeout(() => ripple.remove(), 600);
         }
 
-        // Particle System
+        // ==================== PARTICLE SYSTEM ====================
         const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        let mouseX = 0, mouseY = 0;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -608,11 +1498,6 @@
         }
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
 
         class Particle {
             constructor() {
@@ -627,7 +1512,6 @@
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
-
                 if (this.x < 0) this.x = canvas.width;
                 if (this.x > canvas.width) this.x = 0;
                 if (this.y < 0) this.y = canvas.height;
@@ -642,26 +1526,21 @@
             }
         }
 
-        // Create particles
         for (let i = 0; i < 50; i++) {
             particles.push(new Particle());
         }
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             particles.forEach(particle => {
                 particle.update();
                 particle.draw();
             });
-
-            // Draw connections
             particles.forEach((p1, i) => {
                 particles.slice(i + 1).forEach(p2 => {
                     const dx = p1.x - p2.x;
                     const dy = p1.y - p2.y;
                     const distance = Math.sqrt(dx * dx + dy * dy);
-
                     if (distance < 150) {
                         ctx.beginPath();
                         ctx.moveTo(p1.x, p1.y);
@@ -672,12 +1551,11 @@
                     }
                 });
             });
-
             requestAnimationFrame(animateParticles);
         }
         animateParticles();
 
-        // Intersection Observer for scroll animations
+        // ==================== INTERSECTION OBSERVER ====================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -688,6 +1566,13 @@
 
         document.querySelectorAll('.lecture-card').forEach(card => {
             observer.observe(card);
+        });
+
+        // ==================== WELCOME TOAST ON LOAD ====================
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                showToast('info', 'Welcome!', 'Click on any lecture card to access recordings. Click "Request Access" to request permission.', 5000);
+            }, 1000);
         });
     </script>
 </body>
