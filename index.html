@@ -448,7 +448,17 @@
                             <input type="email" id="requesterEmail" name="requesterEmail" placeholder="john@example.com" required>
                         </div>
                     </div>
-                    
+                    <div class="form-group">
+                        <label for="lectureSelect"><i class="fas fa-book"></i> Lecture You Want Access To</label>
+                        <select id="lectureSelect" name="lectureSelect" required>
+                            <option value="" disabled selected>Select a lecture...</option>
+                            <option value="Object Oriented Programming Concepts 1">Object Oriented Programming Concepts 1</option>
+                            <option value="Web Development 1">Web Development 1</option>
+                            <option value="Database Management 1">Database Management 1</option>
+                            <option value="Mathematics for Computer Science 1">Mathematics for Computer Science 1</option>
+                            <option value="All Lectures">All Lectures</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="requestMessage"><i class="fas fa-comment"></i> Message (Optional)</label>
                         <textarea id="requestMessage" name="requestMessage" placeholder="Any additional information..."></textarea>
