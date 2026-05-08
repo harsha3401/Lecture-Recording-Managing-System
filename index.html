@@ -1,1084 +1,1020 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecture Recordings - Harsha</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --primary-dark: #4f46e5;
-            --secondary: #ec4899;
-            --accent: #06b6d4;
-            --dark: #0f172a;
-            --darker: #020617;
-            --card-bg: rgba(30, 41, 59, 0.6);
-            --card-border: rgba(148, 163, 184, 0.1);
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --success: #10b981;
-            --success-light: #34d399;
-            --warning: #f59e0b;
-            --error: #ef4444;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture Vault - Full Stack</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--darker);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .bg-animation {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: 
-                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
-        }
-
-        .bg-animation::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(99, 102, 241, 0.03) 2px, rgba(99, 102, 241, 0.03) 4px);
-            animation: gridMove 20s linear infinite;
-        }
-
-        @keyframes gridMove { 0% { transform: translateY(0); } 100% { transform: translateY(50px); } }
-
-        .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: -1; animation: float 8s ease-in-out infinite; }
-        .orb-1 { width: 300px; height: 300px; background: var(--primary); top: 10%; left: 10%; animation-delay: 0s; }
-        .orb-2 { width: 250px; height: 250px; background: var(--secondary); top: 60%; right: 10%; animation-delay: -2s; }
-        .orb-3 { width: 200px; height: 200px; background: var(--accent); bottom: 10%; left: 40%; animation-delay: -4s; }
-        @keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(30px, -30px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } }
-
-        .container { max-width: 900px; margin: 0 auto; padding: 60px 20px; position: relative; }
-
-        .header { text-align: center; margin-bottom: 60px; animation: fadeInDown 1s ease-out; }
-        .header-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 24px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 32px; box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3); animation: pulse 3s ease-in-out infinite; }
-        @keyframes pulse { 0%, 100% { box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3); } 50% { box-shadow: 0 20px 60px rgba(99, 102, 241, 0.5); } }
-        .header h1 { font-size: 2.8rem; font-weight: 800; background: linear-gradient(135deg, var(--text-primary), var(--primary-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 12px; letter-spacing: -1px; }
-        .header p { color: var(--text-secondary); font-size: 1.1rem; font-weight: 400; }
-
-        .stats-bar { display: flex; justify-content: center; gap: 40px; margin-bottom: 50px; animation: fadeInUp 1s ease-out 0.2s both; }
-        .stat-item { text-align: center; padding: 16px 24px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; backdrop-filter: blur(10px); transition: all 0.3s ease; cursor: pointer; }
-        .stat-item:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15); }
-        .stat-number { font-size: 1.8rem; font-weight: 700; color: var(--primary-light); }
-        .stat-label { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
-
-        .lectures-grid { display: flex; flex-direction: column; gap: 20px; margin-bottom: 60px; }
-
-        .lecture-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 28px 32px;
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideInUp 0.6s ease-out forwards;
-        }
-
-        .lecture-card:nth-child(1) { animation-delay: 0.3s; }
-        .lecture-card:nth-child(2) { animation-delay: 0.45s; }
-        .lecture-card:nth-child(3) { animation-delay: 0.6s; }
-        .lecture-card:nth-child(4) { animation-delay: 0.75s; }
-
-        @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
-
-        .lecture-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--primary), var(--secondary));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .lecture-card:hover::before { opacity: 1; }
-        .lecture-card:hover { transform: translateX(10px) scale(1.02); border-color: var(--primary); box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15), 0 0 0 1px rgba(99, 102, 241, 0.2); }
-        .lecture-card:active { transform: translateX(5px) scale(0.98); }
-
-        .lecture-icon { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; transition: all 0.4s ease; }
-        .lecture-card:hover .lecture-icon { transform: scale(1.1) rotate(-5deg); }
-        .icon-oop { background: linear-gradient(135deg, #f59e0b, #ef4444); }
-        .icon-web { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
-        .icon-db { background: linear-gradient(135deg, #10b981, #3b82f6); }
-        .icon-math { background: linear-gradient(135deg, #8b5cf6, #ec4899); }
-
-        .lecture-info { flex: 1; }
-        .lecture-info h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 6px; color: var(--text-primary); transition: color 0.3s ease; }
-        .lecture-card:hover .lecture-info h3 { color: var(--primary-light); }
-        .lecture-info p { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
-
-        .lecture-arrow { width: 44px; height: 44px; border-radius: 12px; background: rgba(99, 102, 241, 0.1); display: flex; align-items: center; justify-content: center; color: var(--primary-light); font-size: 18px; transition: all 0.4s ease; flex-shrink: 0; }
-        .lecture-card:hover .lecture-arrow { background: var(--primary); color: white; transform: translateX(5px); }
-
-        /* LOCKED STATE */
-        .lecture-card.locked {
-            cursor: not-allowed;
-            opacity: 0.5;
-            filter: grayscale(0.6);
-            pointer-events: all;
-        }
-
-        .lecture-card.locked:hover {
-            transform: translateX(0) scale(1);
-            border-color: var(--card-border);
-            box-shadow: none;
-        }
-
-        .lecture-card.locked:hover::before { opacity: 0; }
-        .lecture-card.locked:hover .lecture-icon { transform: none; }
-        .lecture-card.locked:hover .lecture-info h3 { color: var(--text-primary); }
-        .lecture-card.locked:hover .lecture-arrow { background: rgba(99, 102, 241, 0.1); color: var(--primary-light); transform: none; }
-
-        .lecture-card.locked .lecture-arrow { background: rgba(239, 68, 68, 0.15); color: var(--error); }
-        .lecture-card.locked .lecture-arrow i::before { content: "\f023"; }
-
-        .lecture-card.locked .lecture-info p { color: var(--error); }
-        .lecture-card.locked .lecture-info p i::before { content: "\f023"; }
-
-        /* UNLOCKED STATE */
-        .lecture-card.unlocked {
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
-        }
-
-        .lecture-card.unlocked::before {
-            opacity: 1;
-            background: linear-gradient(180deg, var(--success), var(--success-light));
-        }
-
-        .lecture-card.unlocked .lecture-arrow { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .lecture-card.unlocked .lecture-arrow i::before { content: "\f00c"; }
-
-        .lecture-card.unlocked .lecture-info p { color: var(--success-light); }
-        .lecture-card.unlocked .lecture-info p i::before { content: "\f00c"; }
-
-        .lecture-card.unlocked .lecture-info p::after {
-            content: " - Access Granted";
-            margin-left: 4px;
-            font-weight: 500;
-        }
-
-        .lock-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--error);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .unlock-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .ripple { position: absolute; border-radius: 50%; background: rgba(99, 102, 241, 0.3); transform: scale(0); animation: rippleEffect 0.6s ease-out; pointer-events: none; }
-        @keyframes rippleEffect { to { transform: scale(4); opacity: 0; } }
-
-        .dev-tag { text-align: center; padding: 30px; animation: fadeInUp 1s ease-out 1s both; }
-        .dev-tag-inner { display: inline-flex; align-items: center; gap: 12px; padding: 14px 28px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 50px; backdrop-filter: blur(10px); transition: all 0.3s ease; }
-        .dev-tag-inner:hover { border-color: var(--secondary); box-shadow: 0 10px 30px rgba(236, 72, 153, 0.15); }
-        .dev-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--secondary), var(--primary)); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-        .dev-text { display: flex; flex-direction: column; align-items: flex-start; }
-        .dev-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .dev-name { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
-        .dev-heart { color: var(--secondary); animation: heartbeat 1.5s ease-in-out infinite; }
-        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
-
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        #particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-
-        /* ==================== TOAST NOTIFICATIONS ==================== */
-        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
-        .toast { display: flex; align-items: center; gap: 14px; padding: 16px 22px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; backdrop-filter: blur(20px); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4); min-width: 320px; max-width: 420px; transform: translateX(120%); opacity: 0; transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); pointer-events: all; position: relative; overflow: hidden; }
-        .toast.show { transform: translateX(0); opacity: 1; }
-        .toast::before { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; border-radius: 16px 0 0 16px; }
-        .toast.success::before { background: linear-gradient(180deg, var(--success), var(--success-light)); }
-        .toast.info::before { background: linear-gradient(180deg, var(--primary), var(--primary-light)); }
-        .toast.warning::before { background: linear-gradient(180deg, var(--warning), #fbbf24); }
-        .toast.error::before { background: linear-gradient(180deg, var(--error), #f87171); }
-        .toast-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-        .toast.success .toast-icon { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-        .toast.info .toast-icon { background: rgba(99, 102, 241, 0.15); color: var(--primary-light); }
-        .toast.warning .toast-icon { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
-        .toast.error .toast-icon { background: rgba(239, 68, 68, 0.15); color: var(--error); }
-        .toast-content { flex: 1; }
-        .toast-title { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-        .toast-message { font-size: 0.82rem; color: var(--text-muted); line-height: 1.4; }
-        .toast-close { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; flex-shrink: 0; }
-        .toast-close:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
-        .toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; border-radius: 0 0 0 16px; animation: toastProgress linear forwards; }
-        .toast.success .toast-progress { background: linear-gradient(90deg, var(--success), var(--success-light)); }
-        .toast.info .toast-progress { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
-        .toast.warning .toast-progress { background: linear-gradient(90deg, var(--warning), #fbbf24); }
-        .toast.error .toast-progress { background: linear-gradient(90deg, var(--error), #f87171); }
-        @keyframes toastProgress { from { width: 100%; } to { width: 0%; } }
-
-        /* ==================== ACCESS FORM MODAL ==================== */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(12px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
-        .modal-overlay.active { opacity: 1; pointer-events: all; }
-        .modal { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 0; max-width: 520px; width: 90%; backdrop-filter: blur(20px); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5); position: relative; overflow: hidden; transform: scale(0.85) translateY(40px); transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .modal-overlay.active .modal { transform: scale(1) translateY(0); }
-        .modal-header { padding: 32px 32px 0; text-align: center; }
-        .modal-header-icon { width: 64px; height: 64px; border-radius: 20px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2)); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 26px; color: var(--primary-light); box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2); animation: modalIconPop 0.5s ease-out 0.2s both; }
-        @keyframes modalIconPop { 0% { transform: scale(0) rotate(-180deg); } 70% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1) rotate(0deg); } }
-        .modal-header h2 { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
-        .modal-header p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 4px; }
-        .modal-body { padding: 24px 32px; }
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 8px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 14px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--card-border); border-radius: 12px; color: var(--text-primary); font-family: 'Poppins', sans-serif; font-size: 0.9rem; transition: all 0.3s ease; outline: none; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15); }
-        .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .modal-footer { padding: 0 32px 32px; display: flex; gap: 12px; justify-content: flex-end; }
-        .modal-btn { padding: 12px 28px; border-radius: 12px; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.3s ease; }
-        .modal-btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3); flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .modal-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4); }
-        .modal-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .modal-btn-secondary { background: rgba(255, 255, 255, 0.05); color: var(--text-secondary); border: 1px solid var(--card-border); }
-        .modal-btn-secondary:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
-        .modal-close-btn { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; font-size: 14px; }
-        .modal-close-btn:hover { background: rgba(255, 255, 255, 0.1); color: var(--text-primary); }
-
-        /* ==================== LOADING OVERLAY ==================== */
-        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(12px); z-index: 10001; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
-        .loading-overlay.active { opacity: 1; pointer-events: all; }
-        .loading-spinner { width: 80px; height: 80px; position: relative; }
-        .loading-spinner::before, .loading-spinner::after { content: ''; position: absolute; border-radius: 50%; }
-        .loading-spinner::before { width: 100%; height: 100%; border: 4px solid transparent; border-top-color: var(--primary); border-right-color: var(--secondary); animation: spin 1s linear infinite; }
-        .loading-spinner::after { width: 60%; height: 60%; top: 20%; left: 20%; border: 3px solid transparent; border-bottom-color: var(--accent); border-left-color: var(--primary-light); animation: spinReverse 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes spinReverse { to { transform: rotate(-360deg); } }
-        .loading-text { margin-top: 28px; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
-        .loading-subtext { margin-top: 8px; font-size: 0.85rem; color: var(--text-muted); }
-        .loading-dots::after { content: ''; animation: loadingDots 1.5s infinite; }
-        @keyframes loadingDots { 0% { content: '.'; } 33% { content: '..'; } 66% { content: '...'; } 100% { content: '.'; } }
-
-        /* ==================== ACCESS GRANTED BADGE ==================== */
-        .access-badge { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); z-index: 10002; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 40px 50px; text-align: center; backdrop-filter: blur(20px); box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 420px; width: 90%; }
-        .access-badge.show { transform: translate(-50%, -50%) scale(1); }
-        .access-badge-icon { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(52, 211, 153, 0.2)); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 36px; color: var(--success); box-shadow: 0 0 40px rgba(16, 185, 129, 0.3); animation: accessPulse 2s ease-in-out infinite; }
-        @keyframes accessPulse { 0%, 100% { box-shadow: 0 0 40px rgba(16, 185, 129, 0.3); } 50% { box-shadow: 0 0 60px rgba(16, 185, 129, 0.5); } }
-        .access-badge h2 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-        .access-badge p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
-        .access-badge-btn { padding: 12px 32px; border-radius: 12px; background: linear-gradient(135deg, var(--success), #059669); color: white; border: none; font-family: 'Poppins', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3); }
-        .access-badge-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4); }
-
-        /* Confetti */
-        .confetti-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10001; overflow: hidden; }
-        .confetti { position: absolute; width: 10px; height: 10px; opacity: 0; }
-        @keyframes confettiFall { 0% { opacity: 1; transform: translateY(-100px) rotate(0deg); } 100% { opacity: 0; transform: translateY(100vh) rotate(720deg); } }
-
-        /* Setup Notice */
-        .setup-notice { background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(251, 191, 36, 0.1)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; font-size: 0.85rem; color: var(--warning); line-height: 1.5; }
-        .setup-notice strong { display: block; margin-bottom: 4px; font-weight: 600; }
-        .setup-notice code { background: rgba(245, 158, 11, 0.2); padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.8rem; }
-
-        /* Access Status Banner */
-        .access-status-banner {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            padding: 14px 24px;
-            margin-bottom: 30px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 16px;
-            backdrop-filter: blur(10px);
-            animation: fadeInUp 1s ease-out 0.1s both;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .access-status-banner:hover {
-            background: rgba(239, 68, 68, 0.15);
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        .access-status-banner.granted {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.2);
-        }
-
-        .access-status-banner.granted:hover {
-            background: rgba(16, 185, 129, 0.15);
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .access-status-icon { font-size: 1.2rem; }
-        .access-status-banner:not(.granted) .access-status-icon { color: var(--error); }
-        .access-status-banner.granted .access-status-icon { color: var(--success); }
-
-        .access-status-text { font-size: 0.9rem; font-weight: 500; }
-        .access-status-banner:not(.granted) .access-status-text { color: var(--error); }
-        .access-status-banner.granted .access-status-text { color: var(--success-light); }
-
-        .access-status-btn {
-            padding: 6px 16px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.2s ease;
-        }
-
-        .access-status-btn.request {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-        }
-
-        .access-status-btn.request:hover { transform: translateY(-1px); }
-
-        .access-status-btn.view {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-
-        /* Responsive */
-        @media (max-width: 640px) {
-            .header h1 { font-size: 2rem; }
-            .lecture-card { padding: 20px 24px; }
-            .lecture-icon { width: 50px; height: 50px; font-size: 20px; }
-            .stats-bar { gap: 16px; flex-wrap: wrap; }
-            .stat-item { padding: 12px 16px; }
-            .toast-container { right: 12px; top: 12px; }
-            .toast { min-width: 280px; padding: 14px 18px; }
-            .modal { max-width: 95%; }
-            .modal-header, .modal-body, .modal-footer { padding-left: 20px; padding-right: 20px; }
-            .form-row { grid-template-columns: 1fr; }
-            .access-badge { padding: 30px 24px; }
-            .access-status-banner { flex-direction: column; text-align: center; gap: 10px; padding: 16px; }
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--darker); }
-        ::-webkit-scrollbar-thumb { background: var(--primary-dark); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-    </style>
-<base target="_blank">
-<base target="_blank">
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .glass { background: rgba(255,255,255,0.08); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); }
+    .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+    .gradient-text { background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .sidebar-link { transition: all 0.2s; border-left: 3px solid transparent; }
+    .sidebar-link:hover, .sidebar-link.active { background: rgba(255,255,255,0.08); border-left-color: #3b82f6; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    .shake { animation: shake 0.4s ease-in-out; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+    .toast-enter { animation: slideIn 0.3s ease-out forwards; }
+    .toast-exit { animation: slideOut 0.3s ease-in forwards; }
+    .input-error { border-color: #ef4444 !important; box-shadow: 0 0 0 3px rgba(239,68,68,0.2) !important; }
+    .input-success { border-color: #10b981 !important; box-shadow: 0 0 0 3px rgba(16,185,129,0.2) !important; }
+  </style>
 </head>
 <body>
-    <canvas id="particles"></canvas>
-    <div class="bg-animation"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useMemo, useEffect, useCallback, createContext, useContext } = React;
+    const { motion, AnimatePresence } = window.Motion;
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+    // ==================== DATABASE / API SIMULATION ====================
+    // This simulates a real backend with SQLite-like persistence using localStorage
+    // In production, replace these with actual fetch() calls to your Node.js/Express API
+    
+    const DB = {
+      // Initialize database
+      init() {
+        if (!localStorage.getItem('lecture_vault_db')) {
+          const initialData = {
+            users: [
+              { id: 1, name: 'System Admin', username: 'admin', email: 'admin@lecturevault.com', password: 'admin123', role: 'admin', createdAt: '2026-05-01T10:00:00Z' },
+            ],
+            lectures: [
+              { id: 1, name: 'Object Oriented Programming Concepts 1', url: 'https://drive.google.com/drive/folders/168nUiam_sjU3B9C7ihbrt7gW7FpOC5YT?usp=drive_link', createdAt: '2026-05-08T10:00:00Z', createdBy: 1 },
+              { id: 2, name: 'Web Development 1', url: 'https://drive.google.com/drive/folders/1qw-v0uA52Tc0QoRJ8Ra4ddIKK-jWXgsh?usp=drive_link', createdAt: '2026-05-08T09:00:00Z', createdBy: 1 },
+              { id: 3, name: 'Database Management 1', url: 'https://drive.google.com/drive/folders/1QsVUJDdU8DtabZGhiJvXdgjX0oZqeAp8?usp=drive_link', createdAt: '2026-05-07T14:00:00Z', createdBy: 1 },
+              { id: 4, name: 'Mathematics for Computer Science', url: 'https://drive.google.com/drive/folders/1shYhyWLDq-kM_xFQFhsyl9w_4__1mTz4?usp=drive_link', createdAt: '2026-05-07T11:00:00Z', createdBy: 1 },
+            ],
+            activityLogs: [
+              { id: 1, action: 'System initialized', userId: 1, timestamp: '2026-05-08T12:00:00Z', details: 'Database created with default admin' }
+            ]
+          };
+          localStorage.setItem('lecture_vault_db', JSON.stringify(initialData));
+        }
+        return JSON.parse(localStorage.getItem('lecture_vault_db'));
+      },
 
-    <!-- Access Request Modal -->
-    <div class="modal-overlay" id="accessModalOverlay">
-        <div class="modal" id="accessModal">
-            <button class="modal-close-btn" onclick="closeAccessModal()">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="modal-header">
-                <div class="modal-header-icon">
-                    <i class="fas fa-envelope-open-text"></i>
-                </div>
-                <h2>Request Access</h2>
-                <p>Fill in your details to request lecture access</p>
-            </div>
-            <div class="modal-body">
-                <div class="setup-notice" id="setupNotice" style="display: none;">
-                    <strong><i class="fas fa-exclamation-triangle"></i> Setup Required</strong>
-                    Replace <code>YOUR_PUBLIC_KEY</code>, <code>YOUR_SERVICE_ID</code>, and <code>YOUR_TEMPLATE_ID</code> in the code with your EmailJS credentials.
-                </div>
-                <form id="accessForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="requesterName"><i class="fas fa-user"></i> Your Name</label>
-                            <input type="text" id="requesterName" name="requesterName" placeholder="John Doe" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="requesterEmail"><i class="fas fa-envelope"></i> Your Email</label>
-                            <input type="email" id="requesterEmail" name="requesterEmail" placeholder="john@example.com" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="lectureSelect"><i class="fas fa-book"></i> Lecture You Want Access To</label>
-                        <select id="lectureSelect" name="lectureSelect" required>
-                            <option value="" disabled selected>Select a lecture...</option>
-                            <option value="Object Oriented Programming Concepts 1">Object Oriented Programming Concepts 1</option>
-                            <option value="Web Development 1">Web Development 1</option>
-                            <option value="Database Management 1">Database Management 1</option>
-                            <option value="Mathematics for Computer Science 1">Mathematics for Computer Science 1</option>
-                            <option value="All Lectures">All Lectures</option>
-                        </select>
-                    </div>
-                    <!-- <div class="form-group">
-                        <label for="requestTime"><i class="fas fa-clock"></i> Preferred Time</label>
-                        <input type="text" id="requestTime" name="requestTime" placeholder="e.g., Morning 9-11 AM, Evening 6-8 PM" required>
-                    </div> -->
-                    <div class="form-group">
-                        <label for="requestMessage"><i class="fas fa-comment"></i> Message (Optional)</label>
-                        <textarea id="requestMessage" name="requestMessage" placeholder="Any additional information..."></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-secondary" onclick="closeAccessModal()">Cancel</button>
-                <button class="modal-btn modal-btn-primary" id="sendAccessBtn" onclick="sendAccessRequest()">
-                    <i class="fas fa-paper-plane"></i> Send Request
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Sending Access Request</div>
-        <div class="loading-subtext">Please wait<span class="loading-dots"></span></div>
-    </div>
-
-    <!-- Access Granted Badge -->
-    <div class="access-badge" id="accessBadge">
-        <div class="access-badge-icon">
-            <i class="fas fa-check"></i>
-        </div>
-        <h2>Request Sent!</h2>
-        <p>Your access request has been emailed to Harsha. You will receive a response shortly.</p>
-        <button class="access-badge-btn" onclick="hideAccessBadge()">Got it!</button>
-    </div>
-
-    <!-- Confetti Container -->
-    <div class="confetti-container" id="confettiContainer"></div>
-
-    <div class="container">
-        <header class="header">
-            <div class="header-icon">
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <h1>Lecture Recordings</h1>
-            <p>Access all your recorded lectures in one place</p>
-        </header>
-
-        <!-- Access Status Banner -->
-        <div class="access-status-banner" id="accessStatusBanner" onclick="handleBannerClick()">
-            <span class="access-status-icon"><i class="fas fa-lock"></i></span>
-            <span class="access-status-text" id="accessStatusText">All lectures are locked. Request access to unlock.</span>
-            <button class="access-status-btn request" id="accessStatusBtn">Request Access</button>
-        </div>
-
-        <div class="stats-bar">
-            <div class="stat-item" onclick="showStatToast('lectures')">
-                <div class="stat-number">4</div>
-                <div class="stat-label">Lectures</div>
-            </div>
-            <div class="stat-item" onclick="showStatToast('drive')">
-                <div class="stat-number"><i class="fab fa-google-drive"></i></div>
-                <div class="stat-label">Google Drive</div>
-            </div>
-            <div class="stat-item" onclick="openAccessModal()">
-                <div class="stat-number"><i class="fas fa-key"></i></div>
-                <div class="stat-label">Request Access</div>
-            </div>
-        </div>
-
-        <div class="lectures-grid" id="lecturesGrid">
-            <a href="https://drive.google.com/drive/folders/168nUiam_sjU3B9C7ihbrt7gW7FpOC5YT?usp=drive_link" 
-               target="_blank" 
-               class="lecture-card locked" 
-               data-lecture="Object Oriented Programming Concepts 1"
-               onclick="handleLectureClick(event, this)">
-                <div class="lock-badge" id="badge-oop"><i class="fas fa-lock"></i> Locked</div>
-                <div class="lecture-icon icon-oop">
-                    <i class="fas fa-cubes"></i>
-                </div>
-                <div class="lecture-info">
-                    <h3>Object Oriented Programming Concepts 1</h3>
-                    <p><i class="fas fa-lock"></i> Request access to view</p>
-                </div>
-                <div class="lecture-arrow">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="https://drive.google.com/drive/folders/1qw-v0uA52Tc0QoRJ8Ra4ddIKK-jWXgsh?usp=drive_link" 
-               target="_blank" 
-               class="lecture-card locked" 
-               data-lecture="Web Development 1"
-               onclick="handleLectureClick(event, this)">
-                <div class="lock-badge" id="badge-web"><i class="fas fa-lock"></i> Locked</div>
-                <div class="lecture-icon icon-web">
-                    <i class="fas fa-code"></i>
-                </div>
-                <div class="lecture-info">
-                    <h3>Web Development 1</h3>
-                    <p><i class="fas fa-lock"></i> Request access to view</p>
-                </div>
-                <div class="lecture-arrow">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="https://drive.google.com/drive/folders/1QsVUJDdU8DtabZGhiJvXdgjX0oZqeAp8?usp=drive_link" 
-               target="_blank" 
-               class="lecture-card locked" 
-               data-lecture="Database Management 1"
-               onclick="handleLectureClick(event, this)">
-                <div class="lock-badge" id="badge-db"><i class="fas fa-lock"></i> Locked</div>
-                <div class="lecture-icon icon-db">
-                    <i class="fas fa-database"></i>
-                </div>
-                <div class="lecture-info">
-                    <h3>Database Management 1</h3>
-                    <p><i class="fas fa-lock"></i> Request access to view</p>
-                </div>
-                <div class="lecture-arrow">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="https://drive.google.com/drive/folders/1shYhyWLDq-kM_xFQFhsyl9w_4__1mTz4?usp=drive_link" 
-               target="_blank" 
-               class="lecture-card locked" 
-               data-lecture="Mathematics for Computer Science 1"
-               onclick="handleLectureClick(event, this)">
-                <div class="lock-badge" id="badge-math"><i class="fas fa-lock"></i> Locked</div>
-                <div class="lecture-icon icon-math">
-                    <i class="fas fa-square-root-variable"></i>
-                </div>
-                <div class="lecture-info">
-                    <h3>Mathematics for Computer Science 1</h3>
-                    <p><i class="fas fa-lock"></i> Request access to view</p>
-                </div>
-                <div class="lecture-arrow">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-        </div>
-
-        <div class="dev-tag">
-            <div class="dev-tag-inner">
-                <div class="dev-avatar">H</div>
-                <div class="dev-text">
-                    <span class="dev-label">Developed by</span>
-                    <span class="dev-name">Harsha</span>
-                </div>
-                <i class="fas fa-heart dev-heart"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-    <script>
-        // ==================== ACCESS CONTROL SYSTEM ====================
-        // Store granted access in memory (resets on page reload)
-        // In production, use localStorage or a backend database
-        let grantedLectures = new Set();
-
-        const LECTURE_MAP = {
-            'Object Oriented Programming Concepts 1': 'oop',
-            'Web Development 1': 'web',
-            'Database Management 1': 'db',
-            'Mathematics for Computer Science 1': 'math'
+      getAll() { return this.init(); },
+      
+      save(data) { localStorage.setItem('lecture_vault_db', JSON.stringify(data)); },
+      
+      // Users
+      getUsers() { return this.getAll().users; },
+      getUserById(id) { return this.getUsers().find(u => u.id === id); },
+      getUserByUsername(username) { return this.getUsers().find(u => u.username === username); },
+      getUserByEmail(email) { return this.getUsers().find(u => u.email === email); },
+      
+      createUser(userData) {
+        const db = this.getAll();
+        const newUser = {
+          id: Date.now(),
+          ...userData,
+          role: 'student',
+          createdAt: new Date().toISOString()
         };
+        db.users.push(newUser);
+        this.logActivity('User registered', newUser.id, `New account: ${newUser.username}`);
+        this.save(db);
+        return newUser;
+      },
+      
+      validateUser(username, password) {
+        const user = this.getUserByUsername(username);
+        if (!user) return { success: false, error: 'Username not found' };
+        if (user.password !== password) return { success: false, error: 'Invalid password' };
+        return { success: true, user: { id: user.id, name: user.name, username: user.username, email: user.email, role: user.role } };
+      },
 
-        function isLectureUnlocked(lectureName) {
-            return grantedLectures.has(lectureName) || grantedLectures.has('All Lectures');
+      // Lectures
+      getLectures() { return this.getAll().lectures; },
+      createLecture(lectureData) {
+        const db = this.getAll();
+        const newLecture = { id: Date.now(), ...lectureData, createdAt: new Date().toISOString() };
+        db.lectures.push(newLecture);
+        this.logActivity('Lecture created', lectureData.createdBy, `Added: ${newLecture.name}`);
+        this.save(db);
+        return newLecture;
+      },
+      updateLecture(id, updates) {
+        const db = this.getAll();
+        const idx = db.lectures.findIndex(l => l.id === id);
+        if (idx === -1) return null;
+        db.lectures[idx] = { ...db.lectures[idx], ...updates };
+        this.logActivity('Lecture updated', updates.updatedBy || db.lectures[idx].createdBy, `Updated: ${db.lectures[idx].name}`);
+        this.save(db);
+        return db.lectures[idx];
+      },
+      deleteLecture(id) {
+        const db = this.getAll();
+        const lecture = db.lectures.find(l => l.id === id);
+        db.lectures = db.lectures.filter(l => l.id !== id);
+        this.logActivity('Lecture deleted', 1, `Removed: ${lecture?.name || 'Unknown'}`);
+        this.save(db);
+        return true;
+      },
+
+      // Activity Logs
+      logActivity(action, userId, details) {
+        const db = this.getAll();
+        db.activityLogs.unshift({
+          id: Date.now(),
+          action,
+          userId,
+          timestamp: new Date().toISOString(),
+          details
+        });
+        if (db.activityLogs.length > 100) db.activityLogs = db.activityLogs.slice(0, 100);
+        this.save(db);
+      },
+      getActivityLogs() { return this.getAll().activityLogs; },
+
+      // Stats
+      getStats() {
+        const db = this.getAll();
+        return {
+          totalUsers: db.users.length,
+          totalLectures: db.lectures.length,
+          totalStudents: db.users.filter(u => u.role === 'student').length,
+          todayLectures: db.lectures.filter(l => l.createdAt.startsWith(new Date().toISOString().split('T')[0])).length,
+          recentActivity: db.activityLogs.slice(0, 10)
+        };
+      }
+    };
+
+    // ==================== TOAST SYSTEM ====================
+    const ToastContext = createContext();
+
+    const ToastProvider = ({ children }) => {
+      const [toasts, setToasts] = useState([]);
+
+      const addToast = useCallback((message, type = 'success', duration = 4000) => {
+        const id = Date.now() + Math.random();
+        setToasts(prev => [...prev, { id, message, type, duration }]);
+        setTimeout(() => removeToast(id), duration);
+      }, []);
+
+      const removeToast = useCallback((id) => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+      }, []);
+
+      return (
+        <ToastContext.Provider value={{ addToast, removeToast }}>
+          {children}
+          <div className="fixed top-6 right-6 z-[100] space-y-3 w-80 pointer-events-none">
+            <AnimatePresence>
+              {toasts.map(toast => (
+                <motion.div
+                  key={toast.id}
+                  initial={{ x: 100, opacity: 0, scale: 0.9 }}
+                  animate={{ x: 0, opacity: 1, scale: 1 }}
+                  exit={{ x: 100, opacity: 0, scale: 0.9 }}
+                  className={`pointer-events-auto p-4 rounded-2xl shadow-2xl backdrop-blur-md border flex items-start gap-3 ${
+                    toast.type === 'error' ? 'bg-red-500/95 border-red-400/30' :
+                    toast.type === 'warning' ? 'bg-amber-500/95 border-amber-400/30' :
+                    toast.type === 'info' ? 'bg-blue-500/95 border-blue-400/30' :
+                    'bg-emerald-500/95 border-emerald-400/30'
+                  } text-white`}
+                >
+                  <div className="mt-0.5">
+                    <i className={`fas fa-${
+                      toast.type === 'error' ? 'exclamation-circle' :
+                      toast.type === 'warning' ? 'exclamation-triangle' :
+                      toast.type === 'info' ? 'info-circle' :
+                      'check-circle'
+                    }`}></i>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm leading-relaxed">{toast.message}</p>
+                  </div>
+                  <button onClick={() => removeToast(toast.id)} className="opacity-70 hover:opacity-100 transition">
+                    <i className="fas fa-times text-xs"></i>
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </ToastContext.Provider>
+      );
+    };
+
+    const useToast = () => {
+      const context = useContext(ToastContext);
+      if (!context) throw new Error('useToast must be used within ToastProvider');
+      return context;
+    };
+
+    // ==================== VALIDATION ====================
+    const Validation = {
+      name(value) {
+        if (!value || value.trim().length < 2) return { valid: false, message: 'Name must be at least 2 characters' };
+        if (!/^[a-zA-Z\s]+$/.test(value)) return { valid: false, message: 'Name can only contain letters and spaces' };
+        return { valid: true };
+      },
+      username(value) {
+        if (!value || value.trim().length < 3) return { valid: false, message: 'Username must be at least 3 characters' };
+        if (!/^[a-zA-Z0-9_]+$/.test(value)) return { valid: false, message: 'Username can only contain letters, numbers, and underscores' };
+        if (DB.getUserByUsername(value)) return { valid: false, message: 'Username already taken' };
+        return { valid: true };
+      },
+      email(value) {
+        if (!value) return { valid: false, message: 'Email is required' };
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) return { valid: false, message: 'Please enter a valid email address' };
+        if (DB.getUserByEmail(value)) return { valid: false, message: 'Email already registered' };
+        return { valid: true };
+      },
+      password(value) {
+        if (!value || value.length < 6) return { valid: false, message: 'Password must be at least 6 characters' };
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(value)) {
+          return { valid: false, message: 'Password must contain uppercase, lowercase, and a number' };
         }
-
-        function unlockLecture(lectureName) {
-            if (lectureName === 'All Lectures') {
-                grantedLectures = new Set([
-                    'Object Oriented Programming Concepts 1',
-                    'Web Development 1',
-                    'Database Management 1',
-                    'Mathematics for Computer Science 1'
-                ]);
-            } else {
-                grantedLectures.add(lectureName);
-            }
-            updateLectureCards();
-            updateAccessBanner();
+        return { valid: true };
+      },
+      confirmPassword(password, confirm) {
+        if (password !== confirm) return { valid: false, message: 'Passwords do not match' };
+        return { valid: true };
+      },
+      lectureName(value) {
+        if (!value || value.trim().length < 3) return { valid: false, message: 'Lecture name must be at least 3 characters' };
+        return { valid: true };
+      },
+      url(value) {
+        if (!value) return { valid: false, message: 'URL is required' };
+        try {
+          new URL(value);
+          return { valid: true };
+        } catch {
+          return { valid: false, message: 'Please enter a valid URL' };
         }
+      }
+    };
 
-        function updateLectureCards() {
-            document.querySelectorAll('.lecture-card').forEach(card => {
-                const lectureName = card.dataset.lecture;
-                const badgeId = 'badge-' + LECTURE_MAP[lectureName];
-                const badge = document.getElementById(badgeId);
+    // ==================== UI COMPONENTS ====================
+    const Card = ({ children, className = "" }) => <div className={`rounded-2xl ${className}`}>{children}</div>;
+    const Button = ({ children, onClick, className = "", variant = "default", disabled = false, type = "button" }) => {
+      const variants = {
+        default: "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/50",
+        outline: "border border-white/20 hover:bg-white/10 text-white",
+        ghost: "hover:bg-white/10 text-slate-300 hover:text-white",
+        danger: "bg-red-600/90 hover:bg-red-500 text-white shadow-lg shadow-red-900/30",
+        success: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/30",
+        secondary: "bg-white/10 hover:bg-white/20 text-white"
+      };
+      return (
+        <button type={type} disabled={disabled} onClick={onClick}
+          className={`inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${className}`}>
+          {children}
+        </button>
+      );
+    };
 
-                if (isLectureUnlocked(lectureName)) {
-                    card.classList.remove('locked');
-                    card.classList.add('unlocked');
-                    if (badge) {
-                        badge.className = 'unlock-badge';
-                        badge.innerHTML = '<i class="fas fa-check"></i> Unlocked';
-                    }
-                } else {
-                    card.classList.remove('unlocked');
-                    card.classList.add('locked');
-                    if (badge) {
-                        badge.className = 'lock-badge';
-                        badge.innerHTML = '<i class="fas fa-lock"></i> Locked';
-                    }
-                }
+    const Input = ({ type = "text", placeholder, value, onChange, error, success, className = "", icon, ...props }) => (
+      <div className="relative">
+        {icon && <i className={`fas fa-${icon} absolute left-4 top-1/2 -translate-y-1/2 ${error ? 'text-red-400' : success ? 'text-emerald-400' : 'text-slate-500'}`}></i>}
+        <input
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          className={`w-full rounded-xl bg-white/10 border px-4 py-3 text-white placeholder-white/30 outline-none transition-all duration-200 ${
+            icon ? 'pl-11' : ''
+          } ${
+            error ? 'border-red-500 input-error' : 
+            success ? 'border-emerald-500 input-success' : 
+            'border-white/10 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50'
+          } ${className}`}
+          {...props}
+        />
+        {error && <p className="text-red-400 text-xs mt-1.5 ml-1"><i className="fas fa-exclamation-circle mr-1"></i>{error}</p>}
+        {success && !error && <p className="text-emerald-400 text-xs mt-1.5 ml-1"><i className="fas fa-check-circle mr-1"></i>Looks good</p>}
+      </div>
+    );
+
+    const Icon = ({ name, size = 16, className = "" }) => <i className={`fas fa-${name} ${className}`} style={{ fontSize: size }}></i>;
+
+    // ==================== LOGIN & REGISTER ====================
+    const AuthScreen = ({ onLogin }) => {
+      const [mode, setMode] = useState('login'); // 'login' | 'register'
+      const [loading, setLoading] = useState(false);
+      const { addToast } = useToast();
+
+      // Login state
+      const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+      const [loginErrors, setLoginErrors] = useState({});
+
+      // Register state
+      const [registerForm, setRegisterForm] = useState({
+        name: '', username: '', email: '', password: '', confirmPassword: ''
+      });
+      const [registerErrors, setRegisterErrors] = useState({});
+      const [touched, setTouched] = useState({});
+
+      const validateLogin = () => {
+        const errors = {};
+        if (!loginForm.username.trim()) errors.username = 'Username is required';
+        if (!loginForm.password) errors.password = 'Password is required';
+        setLoginErrors(errors);
+        return Object.keys(errors).length === 0;
+      };
+
+      const validateRegisterField = (field, value) => {
+        let result;
+        switch(field) {
+          case 'name': result = Validation.name(value); break;
+          case 'username': result = Validation.username(value); break;
+          case 'email': result = Validation.email(value); break;
+          case 'password': result = Validation.password(value); break;
+          case 'confirmPassword': result = Validation.confirmPassword(registerForm.password, value); break;
+          default: return true;
+        }
+        return result;
+      };
+
+      const handleRegisterChange = (field, value) => {
+        setRegisterForm(prev => ({ ...prev, [field]: value }));
+        setTouched(prev => ({ ...prev, [field]: true }));
+        
+        const validation = validateRegisterField(field, value);
+        setRegisterErrors(prev => ({
+          ...prev,
+          [field]: validation.valid ? null : validation.message
+        }));
+
+        // Re-validate confirm password if password changes
+        if (field === 'password' && registerForm.confirmPassword && touched.confirmPassword) {
+          const confirmValidation = Validation.confirmPassword(value, registerForm.confirmPassword);
+          setRegisterErrors(prev => ({
+            ...prev,
+            confirmPassword: confirmValidation.valid ? null : confirmValidation.message
+          }));
+        }
+      };
+
+      const validateRegister = () => {
+        const errors = {};
+        const fields = ['name', 'username', 'email', 'password', 'confirmPassword'];
+        fields.forEach(field => {
+          const validation = validateRegisterField(field, registerForm[field]);
+          if (!validation.valid) errors[field] = validation.message;
+        });
+        setRegisterErrors(errors);
+        setTouched({ name: true, username: true, email: true, password: true, confirmPassword: true });
+        return Object.keys(errors).length === 0;
+      };
+
+      const handleLogin = (e) => {
+        e.preventDefault();
+        if (!validateLogin()) {
+          addToast('Please fix the errors in the form', 'error');
+          return;
+        }
+        setLoading(true);
+        setTimeout(() => {
+          const result = DB.validateUser(loginForm.username, loginForm.password);
+          if (result.success) {
+            addToast(`Welcome back, ${result.user.name}!`, 'success');
+            onLogin(result.user);
+          } else {
+            addToast(result.error, 'error');
+            setLoginErrors({ general: result.error });
+          }
+          setLoading(false);
+        }, 600);
+      };
+
+      const handleRegister = (e) => {
+        e.preventDefault();
+        if (!validateRegister()) {
+          addToast('Please fix all validation errors', 'error');
+          return;
+        }
+        setLoading(true);
+        setTimeout(() => {
+          try {
+            const newUser = DB.createUser({
+              name: registerForm.name.trim(),
+              username: registerForm.username.trim(),
+              email: registerForm.email.trim(),
+              password: registerForm.password
             });
-        }
+            addToast('Registration successful! Please log in.', 'success');
+            setMode('login');
+            setLoginForm({ username: registerForm.username, password: '' });
+            setRegisterForm({ name: '', username: '', email: '', password: '', confirmPassword: '' });
+            setRegisterErrors({});
+            setTouched({});
+          } catch (err) {
+            addToast('Registration failed. Please try again.', 'error');
+          }
+          setLoading(false);
+        }, 800);
+      };
 
-        function updateAccessBanner() {
-            const banner = document.getElementById('accessStatusBanner');
-            const text = document.getElementById('accessStatusText');
-            const btn = document.getElementById('accessStatusBtn');
-            const icon = banner.querySelector('.access-status-icon i');
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 flex items-center justify-center p-6 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+          </div>
 
-            const total = 4;
-            const unlocked = grantedLectures.has('All Lectures') ? 4 : grantedLectures.size;
-
-            if (unlocked === 0) {
-                banner.classList.remove('granted');
-                icon.className = 'fas fa-lock';
-                text.textContent = 'All lectures are locked. Request access to unlock.';
-                btn.className = 'access-status-btn request';
-                btn.textContent = 'Request Access';
-            } else if (unlocked === total) {
-                banner.classList.add('granted');
-                icon.className = 'fas fa-unlock';
-                text.textContent = 'All lectures unlocked! You have full access.';
-                btn.className = 'access-status-btn view';
-                btn.textContent = 'View All';
-            } else {
-                banner.classList.add('granted');
-                icon.className = 'fas fa-unlock-alt';
-                text.textContent = `${unlocked} of ${total} lectures unlocked. Request more access.`;
-                btn.className = 'access-status-btn request';
-                btn.textContent = 'Request More';
-            }
-        }
-
-        function handleBannerClick() {
-            const unlocked = grantedLectures.has('All Lectures') ? 4 : grantedLectures.size;
-            if (unlocked === 4) {
-                showToast('success', 'All Unlocked!', 'You already have access to all lectures. Click any card to open.', 4000);
-            } else {
-                openAccessModal();
-            }
-        }
-
-        // ==================== EMAILJS CONFIGURATION ====================
-        const EMAILJS_PUBLIC_KEY = '0QpJ0TL_6nM6FlN7L';
-        const EMAILJS_SERVICE_ID = 'service_izgaa6v';
-        const EMAILJS_TEMPLATE_ID = 'template_s49aykf';
-        const RECIPIENT_EMAIL = 'harshasandun2005@gmail.com';
-
-        (function() {
-            try {
-                if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
-                    emailjs.init(EMAILJS_PUBLIC_KEY);
-                }
-            } catch(e) {
-                console.log('EmailJS not initialized yet');
-            }
-        })();
-
-        // ==================== TOAST NOTIFICATION SYSTEM ====================
-        function showToast(type, title, message, duration = 4000) {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-
-            const icons = {
-                success: 'fa-check-circle',
-                info: 'fa-info-circle',
-                warning: 'fa-exclamation-triangle',
-                error: 'fa-times-circle'
-            };
-
-            toast.innerHTML = `
-                <div class="toast-icon">
-                    <i class="fas ${icons[type]}"></i>
-                </div>
-                <div class="toast-content">
-                    <div class="toast-title">${title}</div>
-                    <div class="toast-message">${message}</div>
-                </div>
-                <button class="toast-close" onclick="dismissToast(this.parentElement)">
-                    <i class="fas fa-times"></i>
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="w-full max-w-md relative z-10">
+            <Card className="glass rounded-3xl shadow-2xl overflow-hidden">
+              {/* Toggle Tabs */}
+              <div className="flex border-b border-white/10">
+                <button onClick={() => setMode('login')}
+                  className={`flex-1 py-4 text-sm font-medium transition-all ${mode === 'login' ? 'text-white border-b-2 border-blue-500 bg-white/5' : 'text-slate-400 hover:text-white'}`}>
+                  <Icon name="sign-in-alt" className="mr-2" /> Sign In
                 </button>
-                <div class="toast-progress" style="animation-duration: ${duration}ms;"></div>
-            `;
+                <button onClick={() => setMode('register')}
+                  className={`flex-1 py-4 text-sm font-medium transition-all ${mode === 'register' ? 'text-white border-b-2 border-blue-500 bg-white/5' : 'text-slate-400 hover:text-white'}`}>
+                  <Icon name="user-plus" className="mr-2" /> Register
+                </button>
+              </div>
 
-            container.appendChild(toast);
-            requestAnimationFrame(() => { toast.classList.add('show'); });
+              <div className="p-8">
+                {mode === 'login' ? (
+                  <form onSubmit={handleLogin} className="space-y-5">
+                    <div className="text-center space-y-2 mb-6">
+                      <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-500/20 mb-2">
+                        <Icon name="graduation-cap" size={28} className="text-blue-400" />
+                      </div>
+                      <h1 className="text-2xl font-bold gradient-text">Welcome Back</h1>
+                      <p className="text-sm text-slate-400">Sign in to access your lectures</p>
+                    </div>
 
-            const timeout = setTimeout(() => { dismissToast(toast); }, duration);
-            toast.dataset.timeout = timeout;
+                    <Input icon="user" placeholder="Username" value={loginForm.username}
+                      onChange={e => { setLoginForm({...loginForm, username: e.target.value}); setLoginErrors({...loginErrors, username: null, general: null}); }}
+                      error={loginErrors.username} />
+                    
+                    <Input icon="lock" type="password" placeholder="Password" value={loginForm.password}
+                      onChange={e => { setLoginForm({...loginForm, password: e.target.value}); setLoginErrors({...loginErrors, password: null, general: null}); }}
+                      error={loginErrors.password} />
+
+                    {loginErrors.general && (
+                      <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm text-center">
+                        <Icon name="exclamation-circle" className="mr-2" />{loginErrors.general}
+                      </div>
+                    )}
+
+                    <Button type="submit" disabled={loading} className="w-full py-3 text-base rounded-xl">
+                      {loading ? <><Icon name="spinner" className="animate-spin mr-2" /> Signing in...</> : <><Icon name="lock" /> <span className="ml-2">Secure Login</span></>}
+                    </Button>
+
+                    
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <div className="text-center space-y-2 mb-6">
+                      <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-500/20 mb-2">
+                        <Icon name="user-plus" size={24} className="text-emerald-400" />
+                      </div>
+                      <h1 className="text-2xl font-bold gradient-text">Create Account</h1>
+                      <p className="text-sm text-slate-400">Join Lecture Vault today</p>
+                    </div>
+
+                    <Input icon="id-card" placeholder="Full Name" value={registerForm.name}
+                      onChange={e => handleRegisterChange('name', e.target.value)}
+                      error={touched.name && registerErrors.name}
+                      success={touched.name && !registerErrors.name && registerForm.name.length >= 2} />
+
+                    <Input icon="user" placeholder="Username" value={registerForm.username}
+                      onChange={e => handleRegisterChange('username', e.target.value)}
+                      error={touched.username && registerErrors.username}
+                      success={touched.username && !registerErrors.username && registerForm.username.length >= 3} />
+
+                    <Input icon="envelope" type="email" placeholder="Email Address" value={registerForm.email}
+                      onChange={e => handleRegisterChange('email', e.target.value)}
+                      error={touched.email && registerErrors.email}
+                      success={touched.email && !registerErrors.email && registerForm.email.includes('@')} />
+
+                    <Input icon="lock" type="password" placeholder="Password (min 6 chars, A-Z, a-z, 0-9)" value={registerForm.password}
+                      onChange={e => handleRegisterChange('password', e.target.value)}
+                      error={touched.password && registerErrors.password}
+                      success={touched.password && !registerErrors.password && registerForm.password.length >= 6} />
+
+                    <Input icon="lock" type="password" placeholder="Confirm Password" value={registerForm.confirmPassword}
+                      onChange={e => handleRegisterChange('confirmPassword', e.target.value)}
+                      error={touched.confirmPassword && registerErrors.confirmPassword}
+                      success={touched.confirmPassword && !registerErrors.confirmPassword && registerForm.confirmPassword === registerForm.password && registerForm.confirmPassword !== ''} />
+
+                    <Button type="submit" variant="success" disabled={loading} className="w-full py-3 text-base rounded-xl mt-2">
+                      {loading ? <><Icon name="spinner" className="animate-spin mr-2" /> Creating account...</> : <><Icon name="user-check" /> <span className="ml-2">Create Account</span></>}
+                    </Button>
+                  </form>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+      );
+    };
+
+    // ==================== STUDENT PORTAL ====================
+    const StudentPortal = ({ user, onLogout }) => {
+      const [lectures, setLectures] = useState(DB.getLectures());
+      const [searchQuery, setSearchQuery] = useState("");
+      const { addToast } = useToast();
+
+      const filteredLectures = lectures.filter(l => l.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      const handleOpenLecture = (lecture) => {
+        addToast(`Opening ${lecture.name}...`, 'info');
+        window.open(lecture.url, '_blank');
+      };
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white">
+          <header className="border-b border-white/10 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40">
+            <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <Icon name="graduation-cap" size={20} className="text-blue-400" />
+                </div>
+                <div>
+                  <h1 className="font-bold text-lg">Lecture Vault</h1>
+                  <p className="text-xs text-slate-400">Student Portal</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="hidden md:flex items-center gap-2 text-sm text-slate-400">
+                  <Icon name="user" size={14} />
+                  <span>{user.name}</span>
+                  <span className="px-2 py-0.5 rounded-full text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/20">Student</span>
+                </div>
+                <Button variant="ghost" onClick={() => { addToast('Logged out successfully', 'info'); onLogout(); }} className="rounded-xl">
+                  <Icon name="sign-out-alt" /> <span className="ml-2">Logout</span>
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center space-y-4 py-6">
+              <h2 className="text-4xl md:text-5xl font-bold gradient-text">Welcome back, {user.name}</h2>
+              <p className="text-slate-400 text-lg max-w-2xl mx-auto">Access your course recordings and study materials.</p>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="max-w-xl mx-auto">
+              <div className="relative">
+                <Icon name="search" size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input type="text" placeholder="Search lectures..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full rounded-2xl bg-white/5 border border-white/10 pl-12 pr-4 py-4 text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-blue-500/30 transition-all" />
+              </div>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <AnimatePresence>
+                {filteredLectures.map((lecture, i) => (
+                  <motion.div key={lecture.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: i * 0.05 }} layout>
+                    <Card className="glass-card rounded-2xl overflow-hidden group h-full cursor-pointer" onClick={() => handleOpenLecture(lecture)}>
+                      <div className="p-6 space-y-4">
+                        <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
+                          <Icon name="play-circle" size={24} className="text-blue-400" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-lg leading-snug mb-2 group-hover:text-blue-300 transition-colors">{lecture.name}</h3>
+                          <p className="text-sm text-slate-500">Google Drive Folder</p>
+                        </div>
+                        <Button className="w-full rounded-xl mt-2 pointer-events-none">
+                          <Icon name="external-link-alt" size={14} /> <span className="ml-2">Open Recording</span>
+                        </Button>
+                      </div>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+
+            {filteredLectures.length === 0 && (
+              <div className="text-center py-16 text-slate-500">
+                <Icon name="search" size={48} className="mb-4 opacity-30" />
+                <p className="text-lg">No lectures found matching "{searchQuery}"</p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 border-t border-white/10">
+              {[
+                { label: "Total Lectures", value: lectures.length, icon: "folder-open", color: "blue" },
+                { label: "Subjects", value: new Set(lectures.map(l => l.name.split(' ')[0])).size, icon: "book", color: "purple" },
+                { label: "Storage", value: "Active", icon: "database", color: "emerald" },
+                { label: "Your Access", value: "Full", icon: "check-circle", color: "emerald" }
+              ].map((stat, i) => (
+                <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 + i * 0.1 }}
+                  className="text-center p-4 rounded-xl bg-white/5 border border-white/5">
+                  <Icon name={stat.icon} size={20} className={`text-${stat.color}-400 mb-2`} />
+                  <div className="text-2xl font-bold">{stat.value}</div>
+                  <div className="text-xs text-slate-500 mt-1">{stat.label}</div>
+                </motion.div>
+              ))}
+            </div>
+          </main>
+        </div>
+      );
+    };
+
+    // ==================== ADMIN DASHBOARD ====================
+    const AdminDashboard = ({ user, onLogout }) => {
+      const [activeTab, setActiveTab] = useState("lectures");
+      const [lectures, setLectures] = useState(DB.getLectures());
+      const [users, setUsers] = useState(DB.getUsers());
+      const [newLecture, setNewLecture] = useState({ name: '', url: '' });
+      const [editingId, setEditingId] = useState(null);
+      const [searchQuery, setSearchQuery] = useState("");
+      const [lectureErrors, setLectureErrors] = useState({});
+      const { addToast } = useToast();
+
+      const stats = DB.getStats();
+
+      const validateLecture = () => {
+        const errors = {};
+        const nameValidation = Validation.lectureName(newLecture.name);
+        const urlValidation = Validation.url(newLecture.url);
+        if (!nameValidation.valid) errors.name = nameValidation.message;
+        if (!urlValidation.valid) errors.url = urlValidation.message;
+        setLectureErrors(errors);
+        return Object.keys(errors).length === 0;
+      };
+
+      const addLecture = () => {
+        if (!validateLecture()) {
+          addToast('Please fix the errors in the form', 'error');
+          return;
         }
+        const created = DB.createLecture({ ...newLecture, createdBy: user.id });
+        setLectures(DB.getLectures());
+        setNewLecture({ name: '', url: '' });
+        setLectureErrors({});
+        addToast(`Lecture "${created.name}" added successfully!`, 'success');
+      };
 
-        function dismissToast(toast) {
-            if (!toast) return;
-            clearTimeout(toast.dataset.timeout);
-            toast.style.transform = 'translateX(120%)';
-            toast.style.opacity = '0';
-            setTimeout(() => { if (toast.parentElement) toast.remove(); }, 500);
-        }
+      const removeLecture = (id) => {
+        if (!window.confirm('Are you sure you want to delete this lecture?')) return;
+        DB.deleteLecture(id);
+        setLectures(DB.getLectures());
+        addToast('Lecture deleted successfully', 'success');
+      };
 
-        // ==================== ACCESS MODAL ====================
-        function openAccessModal() {
-            document.getElementById('accessModalOverlay').classList.add('active');
-            if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') {
-                document.getElementById('setupNotice').style.display = 'block';
-            }
-            // Pre-select first locked lecture if any
-            const lockedCards = document.querySelectorAll('.lecture-card.locked');
-            if (lockedCards.length > 0) {
-                const firstLocked = lockedCards[0].dataset.lecture;
-                const select = document.getElementById('lectureSelect');
-                for (let opt of select.options) {
-                    if (opt.value === firstLocked) {
-                        select.value = firstLocked;
-                        break;
-                    }
-                }
-            }
-        }
+      const filteredLectures = lectures.filter(l => l.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-        function closeAccessModal() {
-            document.getElementById('accessModalOverlay').classList.remove('active');
-            document.getElementById('accessForm').reset();
-        }
+      const sidebarItems = [
+        { id: "lectures", icon: "folder-open", label: "Lectures" },
+        { id: "users", icon: "users", label: "Users" },
+        { id: "analytics", icon: "chart-line", label: "Analytics" },
+        { id: "logs", icon: "history", label: "Activity Logs" },
+        { id: "settings", icon: "cog", label: "Settings" }
+      ];
 
-        document.getElementById('accessModalOverlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeAccessModal();
-        });
+      const handleLogout = () => {
+        addToast('Admin session ended', 'info');
+        onLogout();
+      };
 
-        // ==================== LOADING OVERLAY ====================
-        function showLoading(text = 'Sending Access Request') {
-            const overlay = document.getElementById('loadingOverlay');
-            overlay.querySelector('.loading-text').textContent = text;
-            overlay.classList.add('active');
-        }
+      return (
+        <div className="min-h-screen bg-slate-950 text-white flex">
+          {/* Sidebar */}
+          <aside className="w-64 bg-slate-900/80 border-r border-white/10 flex flex-col fixed h-full z-30">
+            <div className="p-6 border-b border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
+                  <Icon name="shield-alt" size={18} className="text-white" />
+                </div>
+                <div>
+                  <h1 className="font-bold">Lecture Vault</h1>
+                  <p className="text-xs text-slate-400">Admin Console</p>
+                </div>
+              </div>
+            </div>
 
-        function hideLoading() {
-            document.getElementById('loadingOverlay').classList.remove('active');
-        }
+            <nav className="flex-1 p-4 space-y-1">
+              {sidebarItems.map(item => (
+                <button key={item.id} onClick={() => setActiveTab(item.id)}
+                  className={`sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium ${activeTab === item.id ? 'active text-white bg-white/10' : 'text-slate-400 hover:text-white'}`}>
+                  <Icon name={item.icon} size={16} />
+                  {item.label}
+                </button>
+              ))}
+            </nav>
 
-        // ==================== ACCESS GRANTED BADGE ====================
-        function showAccessGranted(lectureName) {
-            const badge = document.getElementById('accessBadge');
-            const title = badge.querySelector('h2');
-            const msg = badge.querySelector('p');
+            <div className="p-4 border-t border-white/10">
+              <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/5 mb-3">
+                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <Icon name="user-shield" size={14} className="text-blue-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{user.name}</p>
+                  <p className="text-xs text-slate-500">Administrator</p>
+                </div>
+              </div>
+              <Button variant="ghost" onClick={handleLogout} className="w-full justify-center">
+                <Icon name="sign-out-alt" size={14} /> <span className="ml-2">Logout</span>
+              </Button>
+            </div>
+          </aside>
 
-            if (lectureName === 'All Lectures') {
-                title.textContent = 'All Lectures Unlocked!';
-                msg.textContent = 'You now have access to all lecture recordings. Click any card to open.';
-            } else {
-                title.textContent = 'Access Granted!';
-                msg.textContent = `${lectureName} is now unlocked. Click the card to open it.`;
-            }
+          {/* Main Content */}
+          <main className="flex-1 ml-64 p-8 space-y-6 overflow-y-auto h-screen">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold capitalize">{activeTab}</h2>
+                <p className="text-slate-400 text-sm mt-1">Manage your lecture repository</p>
+              </div>
+              <div className="glass px-4 py-2 rounded-xl text-sm text-slate-300">
+                <Icon name="code" size={14} className="mr-2 text-blue-400" />
+                Developer: Harsha
+              </div>
+            </div>
 
-            badge.classList.add('show');
-            createConfetti();
-            showToast('success', 'Access Granted!', lectureName === 'All Lectures' ? 'All lectures are now unlocked!' : `${lectureName} has been unlocked.`, 5000);
-        }
+            {/* Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {[
+                { label: "Total Lectures", value: stats.totalLectures, icon: "folder-open", color: "from-blue-600/20 to-blue-400/10" },
+                { label: "Total Users", value: stats.totalUsers, icon: "users", color: "from-purple-600/20 to-purple-400/10" },
+                { label: "Students", value: stats.totalStudents, icon: "user-graduate", color: "from-emerald-600/20 to-emerald-400/10" },
+                { label: "Added Today", value: stats.todayLectures, icon: "plus-circle", color: "from-amber-600/20 to-amber-400/10" }
+              ].map((stat, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+                  <Card className={`bg-gradient-to-br ${stat.color} border-white/10 rounded-2xl`}>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-slate-400 text-sm">{stat.label}</span>
+                        <Icon name={stat.icon} size={18} className="text-white/60" />
+                      </div>
+                      <div className="text-3xl font-bold">{stat.value}</div>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
 
-        function hideAccessBadge() {
-            document.getElementById('accessBadge').classList.remove('show');
-            document.getElementById('confettiContainer').innerHTML = '';
-        }
+            <AnimatePresence mode="wait">
+              {/* LECTURES TAB */}
+              {activeTab === "lectures" && (
+                <motion.div key="lectures" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
+                  <Card className="glass border-white/10 rounded-2xl">
+                    <div className="p-6">
+                      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <Icon name="plus" size={16} className="text-blue-400" />
+                        Add New Lecture
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Input placeholder="Lecture name" value={newLecture.name}
+                            onChange={e => { setNewLecture({...newLecture, name: e.target.value}); setLectureErrors({...lectureErrors, name: null}); }}
+                            error={lectureErrors.name} />
+                        </div>
+                        <div>
+                          <Input placeholder="Google Drive folder URL" value={newLecture.url}
+                            onChange={e => { setNewLecture({...newLecture, url: e.target.value}); setLectureErrors({...lectureErrors, url: null}); }}
+                            error={lectureErrors.url} />
+                        </div>
+                        <Button onClick={addLecture} className="rounded-xl self-start">
+                          <Icon name="plus-circle" size={16} /> <span className="ml-2">Add Lecture</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
 
-        // ==================== CONFETTI ====================
-        function createConfetti() {
-            const container = document.getElementById('confettiContainer');
-            const colors = ['#6366f1', '#ec4899', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6'];
+                  <div className="flex items-center gap-4">
+                    <div className="relative flex-1 max-w-md">
+                      <Icon name="search" size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <input type="text" placeholder="Search lectures..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                        className="w-full rounded-xl bg-white/5 border border-white/10 pl-11 pr-4 py-3 text-white placeholder-white/30 outline-none focus:ring-2 focus:ring-blue-500/30" />
+                    </div>
+                    <div className="text-sm text-slate-500">{filteredLectures.length} lectures</div>
+                  </div>
 
-            for (let i = 0; i < 60; i++) {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + '%';
-                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.width = (Math.random() * 8 + 4) + 'px';
-                confetti.style.height = (Math.random() * 8 + 4) + 'px';
-                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-                confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s linear ${Math.random() * 2}s forwards`;
-                container.appendChild(confetti);
-            }
+                  <div className="space-y-3">
+                    <AnimatePresence>
+                      {filteredLectures.map((lecture, i) => (
+                        <motion.div key={lecture.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                          transition={{ delay: i * 0.03 }} layout>
+                          <Card className="glass-card rounded-xl group">
+                            <div className="p-4 flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                                <Icon name="video" size={16} className="text-blue-400" />
+                              </div>
+                              {editingId === lecture.id ? (
+                                <div className="flex-1 flex gap-3">
+                                  <input type="text" defaultValue={lecture.name} id={`edit-name-${lecture.id}`}
+                                    className="flex-1 rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-sm text-white" />
+                                  <Button variant="success" onClick={() => {
+                                    const newName = document.getElementById(`edit-name-${lecture.id}`).value;
+                                    DB.updateLecture(lecture.id, { name: newName, updatedBy: user.id });
+                                    setLectures(DB.getLectures());
+                                    setEditingId(null);
+                                    addToast('Lecture updated', 'success');
+                                  }} className="px-3">
+                                    <Icon name="check" size={14} />
+                                  </Button>
+                                  <Button variant="ghost" onClick={() => setEditingId(null)} className="px-3">
+                                    <Icon name="times" size={14} />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <>
+                                  <div className="flex-1 min-w-0">
+                                    <h4 className="font-medium truncate">{lecture.name}</h4>
+                                    <p className="text-xs text-slate-500 mt-0.5">{lecture.url.substring(0, 50)}...</p>
+                                  </div>
+                                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Button variant="ghost" onClick={() => window.open(lecture.url, '_blank')} className="px-3 py-2">
+                                      <Icon name="external-link-alt" size={14} />
+                                    </Button>
+                                    <Button variant="ghost" onClick={() => setEditingId(lecture.id)} className="px-3 py-2">
+                                      <Icon name="edit" size={14} />
+                                    </Button>
+                                    <Button variant="danger" onClick={() => removeLecture(lecture.id)} className="px-3 py-2">
+                                      <Icon name="trash-alt" size={14} />
+                                    </Button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </Card>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              )}
 
-            setTimeout(() => { container.innerHTML = ''; }, 5000);
-        }
+              {/* USERS TAB */}
+              {activeTab === "users" && (
+                <motion.div key="users" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                  <Card className="glass border-white/10 rounded-2xl overflow-hidden">
+                    <div className="p-6 border-b border-white/10">
+                      <h3 className="text-lg font-semibold">Registered Users</h3>
+                      <p className="text-sm text-slate-400 mt-1">Manage user accounts and permissions</p>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-white/5">
+                          <tr>
+                            <th className="text-left text-xs font-medium text-slate-400 uppercase px-6 py-3">User</th>
+                            <th className="text-left text-xs font-medium text-slate-400 uppercase px-6 py-3">Username</th>
+                            <th className="text-left text-xs font-medium text-slate-400 uppercase px-6 py-3">Email</th>
+                            <th className="text-left text-xs font-medium text-slate-400 uppercase px-6 py-3">Role</th>
+                            <th className="text-left text-xs font-medium text-slate-400 uppercase px-6 py-3">Joined</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                          {users.map(u => (
+                            <tr key={u.id} className="hover:bg-white/5 transition">
+                              <td className="px-6 py-4">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                    <Icon name="user" size={12} className="text-blue-400" />
+                                  </div>
+                                  <span className="font-medium">{u.name}</span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-slate-300">{u.username}</td>
+                              <td className="px-6 py-4 text-sm text-slate-300">{u.email}</td>
+                              <td className="px-6 py-4">
+                                <span className={`px-2 py-1 rounded-full text-xs border ${
+                                  u.role === 'admin' ? 'bg-blue-500/20 text-blue-300 border-blue-500/20' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/20'
+                                }`}>
+                                  {u.role}
+                                </span>
+                              </td>
+                              <td className="px-6 py-4 text-sm text-slate-500">{new Date(u.createdAt).toLocaleDateString()}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </Card>
+                </motion.div>
+              )}
 
-        // ==================== SEND ACCESS REQUEST (EMAILJS) ====================
-        async function sendAccessRequest() {
-            const form = document.getElementById('accessForm');
+              {/* ANALYTICS TAB */}
+              {activeTab === "analytics" && (
+                <motion.div key="analytics" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card className="glass border-white/10 rounded-2xl p-8 text-center">
+                      <Icon name="chart-pie" size={48} className="text-slate-600 mb-4" />
+                      <h3 className="text-xl font-semibold mb-2">Usage Analytics</h3>
+                      <p className="text-slate-400">Track lecture access patterns and popular content.</p>
+                    </Card>
+                    <Card className="glass border-white/10 rounded-2xl p-8 text-center">
+                      <Icon name="chart-bar" size={48} className="text-slate-600 mb-4" />
+                      <h3 className="text-xl font-semibold mb-2">Growth Metrics</h3>
+                      <p className="text-slate-400">Monitor user registration and content growth over time.</p>
+                    </Card>
+                  </div>
+                </motion.div>
+              )}
 
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                showToast('warning', 'Missing Information', 'Please fill in all required fields before sending.', 4000);
-                return;
-            }
+              {/* LOGS TAB */}
+              {activeTab === "logs" && (
+                <motion.div key="logs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                  <Card className="glass border-white/10 rounded-2xl overflow-hidden">
+                    <div className="p-6 border-b border-white/10">
+                      <h3 className="text-lg font-semibold">Activity Logs</h3>
+                      <p className="text-sm text-slate-400 mt-1">Recent system activity and changes</p>
+                    </div>
+                    <div className="divide-y divide-white/5">
+                      {stats.recentActivity.map((log, i) => (
+                        <div key={log.id} className="p-4 flex items-center gap-4 hover:bg-white/5 transition">
+                          <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                            <Icon name="history" size={12} className="text-blue-400" />
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium">{log.action}</p>
+                            <p className="text-xs text-slate-500">{log.details}</p>
+                          </div>
+                          <div className="text-xs text-slate-600">
+                            {new Date(log.timestamp).toLocaleTimeString()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </motion.div>
+              )}
 
-            const name = document.getElementById('requesterName').value.trim();
-            const email = document.getElementById('requesterEmail').value.trim();
-            const lecture = document.getElementById('lectureSelect').value;
-            // const time = document.getElementById('requestTime').value.trim();
-            const message = document.getElementById('requestMessage').value.trim();
+              {/* SETTINGS TAB */}
+              {activeTab === "settings" && (
+                <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+                  <Card className="glass border-white/10 rounded-2xl p-8">
+                    <h3 className="text-xl font-semibold mb-6">System Settings</h3>
+                    <div className="space-y-4 max-w-lg">
+                      <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+                        <div>
+                          <p className="font-medium">Database Integration</p>
+                          <p className="text-sm text-slate-400">Connect to Firebase/Supabase backend</p>
+                        </div>
+                        <div className="w-12 h-6 rounded-full bg-blue-600 relative cursor-pointer">
+                          <div className="absolute right-1 top-1 w-4 h-4 rounded-full bg-white"></div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+                        <div>
+                          <p className="font-medium">Public Access</p>
+                          <p className="text-sm text-slate-400">Allow guest viewing without login</p>
+                        </div>
+                        <div className="w-12 h-6 rounded-full bg-slate-700 relative cursor-pointer">
+                          <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white"></div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+                        <div>
+                          <p className="font-medium">Email Notifications</p>
+                          <p className="text-sm text-slate-400">Send alerts on new lectures</p>
+                        </div>
+                        <div className="w-12 h-6 rounded-full bg-slate-700 relative cursor-pointer">
+                          <div className="absolute left-1 top-1 w-4 h-4 rounded-full bg-white"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </main>
+        </div>
+      );
+    };
 
-            const btn = document.getElementById('sendAccessBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    // ==================== MAIN APP ====================
+    function App() {
+      const [user, setUser] = useState(null);
 
-            closeAccessModal();
-            showLoading('Sending your access request...');
+      return (
+        <ToastProvider>
+          {!user ? (
+            <AuthScreen onLogin={setUser} />
+          ) : user.role === 'admin' ? (
+            <AdminDashboard user={user} onLogout={() => setUser(null)} />
+          ) : (
+            <StudentPortal user={user} onLogout={() => setUser(null)} />
+          )}
+        </ToastProvider>
+      );
+    }
 
-            const templateParams = {
-                to_email: RECIPIENT_EMAIL,
-                from_name: name,
-                from_email: email,
-                lecture_name: lecture,
-                // preferred_time: time,
-                message: message || 'No additional message provided.',
-                request_date: new Date().toLocaleString(),
-                user_agent: navigator.userAgent,
-                page_url: window.location.href
-            };
-
-            try {
-                if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY' || 
-                    EMAILJS_SERVICE_ID === 'YOUR_SERVICE_ID' || 
-                    EMAILJS_TEMPLATE_ID === 'YOUR_TEMPLATE_ID') {
-
-                    await simulateEmailSend(templateParams);
-                    showToast('info', 'Demo Mode', 'EmailJS credentials not configured. Simulating email send.', 6000);
-                } else {
-                    const response = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-                    console.log('Email sent successfully:', response);
-                }
-
-                hideLoading();
-
-                // Unlock the requested lecture(s)
-                unlockLecture(lecture);
-                showAccessGranted(lecture);
-
-            } catch (error) {
-                console.error('Email send failed:', error);
-                hideLoading();
-                showToast('error', 'Send Failed', 'Unable to send email. Please try again or contact Harsha directly.', 5000);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Request';
-            }
-        }
-
-        function simulateEmailSend(params) {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    console.log('=== SIMULATED EMAIL ===');
-                    console.log('To:', params.to_email);
-                    console.log('From:', params.from_name, '<' + params.from_email + '>');
-                    console.log('Lecture:', params.lecture_name);
-                    console.log('Time:', params.preferred_time);
-                    console.log('Message:', params.message);
-                    console.log('Date:', params.request_date);
-                    console.log('=======================');
-                    resolve({ status: 200, text: 'OK (simulated)' });
-                }, 2000);
-            });
-        }
-
-        // ==================== LECTURE CLICK HANDLER (WITH LOCK CHECK) ====================
-        function handleLectureClick(event, element) {
-            event.preventDefault();
-            const lectureName = element.dataset.lecture;
-
-            if (!isLectureUnlocked(lectureName)) {
-                createRipple(event, element);
-                showToast('warning', 'Access Required', `${lectureName} is locked. Click "Request Access" to unlock it.`, 5000);
-
-                // Auto-open the access modal after a short delay
-                setTimeout(() => {
-                    const select = document.getElementById('lectureSelect');
-                    select.value = lectureName;
-                    openAccessModal();
-                }, 1500);
-                return;
-            }
-
-            // Lecture is unlocked - proceed to Drive
-            createRipple(event, element);
-            const href = element.getAttribute('href');
-
-            showLoading(`Opening ${lectureName}`);
-            showToast('info', 'Opening Lecture', `Redirecting to ${lectureName} on Google Drive...`, 3000);
-
-            setTimeout(() => {
-                hideLoading();
-                showToast('success', 'Redirected!', `${lectureName} is now opening in a new tab.`, 3000);
-                window.open(href, '_blank');
-            }, 2000);
-        }
-
-        // ==================== STAT CLICK HANDLERS ====================
-        function showStatToast(type) {
-            if (type === 'lectures') {
-                showToast('info', '4 Lectures Available', 'You have access to 4 lecture recordings across different subjects.', 4000);
-            } else if (type === 'drive') {
-                showToast('info', 'Google Drive Integration', 'All lectures are hosted securely on Google Drive for easy access.', 4000);
-            }
-        }
-
-        // ==================== RIPPLE EFFECT ====================
-        function createRipple(event, element) {
-            const ripple = document.createElement('span');
-            const rect = element.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = event.clientX - rect.left - size / 2;
-            const y = event.clientY - rect.top - size / 2;
-
-            ripple.style.width = ripple.style.height = size + 'px';
-            ripple.style.left = x + 'px';
-            ripple.style.top = y + 'px';
-            ripple.classList.add('ripple');
-
-            element.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-        }
-
-        // ==================== PARTICLE SYSTEM ====================
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = (Math.random() - 0.5) * 0.5;
-                this.speedY = (Math.random() - 0.5) * 0.5;
-                this.opacity = Math.random() * 0.5 + 0.1;
-            }
-
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.y < 0) this.y = canvas.height;
-                if (this.y > canvas.height) this.y = 0;
-            }
-
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(99, 102, 241, ${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < 50; i++) {
-            particles.push(new Particle());
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(particle => {
-                particle.update();
-                particle.draw();
-            });
-            particles.forEach((p1, i) => {
-                particles.slice(i + 1).forEach(p2 => {
-                    const dx = p1.x - p2.x;
-                    const dy = p1.y - p2.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < 150) {
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - distance / 150)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
-                    }
-                });
-            });
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        // ==================== INTERSECTION OBSERVER ====================
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.animationPlayState = 'running';
-                }
-            });
-        });
-
-        document.querySelectorAll('.lecture-card').forEach(card => {
-            observer.observe(card);
-        });
-
-        // ==================== WELCOME TOAST ON LOAD ====================
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                showToast('info', 'Welcome!', 'All lectures are locked by default. Request access to unlock them.', 5000);
-            }, 1000);
-        });
-    </script>
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 </body>
 </html>
